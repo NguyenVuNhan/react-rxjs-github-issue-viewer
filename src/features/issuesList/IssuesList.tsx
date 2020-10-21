@@ -1,21 +1,23 @@
-import React from 'react'
-
-import { Issue } from 'api/githubAPI'
+import React, { Suspense } from 'react'
 import { IssueListItem } from './IssueListItem'
 
 import styles from './IssuesList.module.css'
+import { useIssues } from 'state'
 
-interface Props {
-  issues: Issue[]
-  showIssueComments: (issueId: number) => void
-}
+const IssuesListLoaded = () => {
+  const { issues } = useIssues()
 
-export const IssuesList = ({ issues, showIssueComments }: Props) => {
   const renderedIssues = issues.map((issue) => (
     <li key={issue.id}>
-      <IssueListItem {...issue} showIssueComments={showIssueComments} />
+      <IssueListItem {...issue} />
     </li>
   ))
 
   return <ul className={styles.issuesList}>{renderedIssues}</ul>
 }
+
+export const IssuesList = () => (
+  <Suspense fallback={<p>Loading ...</p>}>
+    <IssuesListLoaded />
+  </Suspense>
+)
